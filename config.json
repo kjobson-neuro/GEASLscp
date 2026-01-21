@@ -1,0 +1,31 @@
+{
+    "config": {
+       "ld": 3,
+       "pld": 2.025,
+       "avg": 2
+    },
+    "inputs": {
+        "dicom_nifti_asl": {
+            "base": "file",
+            "location": {
+                "name": "10-CLARITI_NACC169557_MR_CLARiTI_Adv._LL_LD_BS_ASL_(Eyes_Open)_.zip",
+                "path": "/flywheel/v0/input/dicom_nifti_asl/10-CLARITI_NACC169557_MR_CLARiTI_Adv._LL_LD_BS_ASL_(Eyes_Open)_.zip"
+            },
+            "object": {
+                "size": 278,
+                "mimetype": "application/octet-stream",
+                "modality": null,
+                "classification": {},
+                "tags": [],
+                "info": {},
+                "version": 1,
+                "file_id": "",
+                "origin": {
+                    "type": "user",
+                    "id": ""
+                }
+            }
+        }
+    },
+    "destination": {}
+}
