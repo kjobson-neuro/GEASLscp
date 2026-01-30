@@ -163,6 +163,7 @@ if [ ! -f "${json_file}" ]; then
     exit 1
 fi
 
+echo "JSON file used to get input: ${json_file}"
 
 #if these variables do not already exist in the gear, get them from the JSON file
 is_valid_number() {
@@ -175,8 +176,8 @@ if ! is_valid_number "$avg_input" || \
     # Parse NumberOfAverages using grep and awk
     num_avg=$(grep '"NumberOfAverages"' "${json_file}" | awk -F': ' '{print $2}' | tr -d ', ')
     m0_scale=$(( num_avg * 32 ))
-    ld=$((grep '"LabelingDuration"' "${json_file}" | awk -F': ' '{print $2}' | tr -d ', '))
-    pld=$((grep '"PostLabelingDelay"' "${json_file}" | awk -F': ' '{print $2}' | tr -d ', '))
+    ld=$(grep '"LabelingDuration"' "${json_file}" | awk -F': ' '{print $2}' | tr -d ', ')
+    pld=$(grep '"PostLabelingDelay"' "${json_file}" | awk -F': ' '{print $2}' | tr -d ', ')
     echo "Parsed using JSON file from ASL data."
     echo "NumberOfAverages: ${num_avg}"
     echo "M0 Scale: ${m0_scale}"

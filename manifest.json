@@ -11,12 +11,12 @@
   "config": {
     "ld": {
       "description": "labeling delay",
-      "type": "integer",
+      "type": "number",
       "optional": "true"
     },
     "pld": {
       "description": "post-labeling delay",
-      "type": "integer",
+      "type": "number",
       "optional": "true"
     },
     "avg": {
@@ -26,7 +26,7 @@
     }
   },
   "license": "MIT",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "environment": {
     "FLYWHEEL": "/flywheel/v0",
     "PYTHON_GET_PIP_URL": "https://github.com/pypa/get-pip/raw/0d8570dc44796f4369b652222cf176b3db6ac70e/public/get-pip.py",
@@ -70,7 +70,7 @@
   "custom": {
     "gear-builder": {
       "category": "analysis",
-      "image": "kjobson/geaslscp:0.1.1"
+      "image": "kjobson/geaslscp:0.1.4"
     },
     "flywheel": {
       "suite": "BrainScienceCenter"

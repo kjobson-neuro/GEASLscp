@@ -12,8 +12,8 @@ print(sys.path)
 
 # logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('aslscp')
-logger.info("=======: ASL gear :=======")
+logger = logging.getLogger('geaslscp')
+logger.info("=======: GE ASL gear :=======")
 
 with flywheel.GearContext() as context:
     # Setup basic logging
