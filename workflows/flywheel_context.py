@@ -83,7 +83,7 @@ with flywheel.GearContext() as context:
     sessions = [session_container.label]
 
     # Define the output file path
-    INFO_OUT = os.path.join(workdir, "metadata.txt")
+    INFO_OUT = os.path.join(workdir, "metadata.json")
     
     # Create metadata dictionary
     metadata = {

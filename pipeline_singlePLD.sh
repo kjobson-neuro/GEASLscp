@@ -95,7 +95,7 @@ exe_dir="${flywheel}/workflows"
 [ -e "$exe_dir" ] || mkdir "$exe_dir"
 
 ### Get information about the scan
-touch ${workdir}/metadata.txt
+touch ${workdir}/metadata.json
 
 python3 ${exe_dir}/flywheel_context.py
 
@@ -103,10 +103,6 @@ python3 ${exe_dir}/flywheel_context.py
 if [ ! -f "${workdir}/metadata.txt" ]; then
     echo "ERROR: Failed to generate metadata file"
 fi
-
-# Source the metadata for use in bash (parse JSON)
-METADATA_FILE="${workdir}/metadata.txt"
-echo "Metadata file created at: $METADATA_FILE"
 
 ### Data Preprocessing
 # Check if the data is a zip file
@@ -200,24 +196,14 @@ if [[ -z "$ld" || -z "$pld" || -z "$m0_scale" ]]; then
     exit 1
 fi
 
-# Merge files for mcflirt
-fslmerge -t ${workdir}/all_data.nii.gz ${m0_nifti} ${asl_nifti}
-
-# Motion correction
-mcflirt -in ${workdir}/all_data.nii.gz -out ${workdir}/mc.nii.gz
-
-# Split the data back up after motion correction
-fslroi ${workdir}/mc.nii.gz ${workdir}/m0_mc.nii.gz 0 1
-fslroi ${workdir}/mc.nii.gz ${workdir}/asl_mc.nii.gz 1 1
-
 # Skull-Stripping
-${FREESURFER_HOME}/bin/mri_synthstrip -i ${workdir}/m0_mc.nii.gz -m ${workdir}/mask.nii.gz
+${FREESURFER_HOME}/bin/mri_synthstrip -i ${m0_nifti} -m ${workdir}/mask.nii.gz
 
 # Erode mask and use on CBF map
 fslmaths ${workdir}/mask.nii.gz -ero ${workdir}/mask_ero.nii.gz
 
 ### Calculate CBF
-python3 /flywheel/v0/workflows/ge_cbf_calc.py -m0 ${workdir}/m0_mc.nii.gz -asl ${workdir}/asl_mc.nii.gz -m ${workdir}/mask.nii.gz -ld $ld -pld $pld -scale $m0_scale -out ${workdir}
+python3 /flywheel/v0/workflows/ge_cbf_calc.py -m0 ${m0_nifti} -asl ${asl_nifti} -m ${workdir}/mask.nii.gz -ld $ld -pld $pld -scale $m0_scale -out ${workdir}
 fslmaths ${workdir}/cbf.nii.gz -mas ${workdir}/mask_ero.nii.gz ${workdir}/cbf_mas.nii.gz
 
 # Smoothing ASL image subject space, deforming images to match template
