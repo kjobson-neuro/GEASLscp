@@ -23,10 +23,15 @@
       "description": "number of averages",
       "type": "integer",
       "optional": "true"
+    },
+    "skip_extended": {
+      "description": "Skip registration, atlas extraction, and PDF generation. Only output CBF map.",
+      "type": "boolean",
+      "optional": "true"
     }
   },
   "license": "MIT",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "environment": {
     "FLYWHEEL": "/flywheel/v0",
     "PYTHON_GET_PIP_URL": "https://github.com/pypa/get-pip/raw/0d8570dc44796f4369b652222cf176b3db6ac70e/public/get-pip.py",
@@ -70,7 +75,7 @@
   "custom": {
     "gear-builder": {
       "category": "analysis",
-      "image": "kjobson/geaslscp:0.1.9"
+      "image": "kjobson/geaslscp:0.2.0"
     },
     "flywheel": {
       "suite": "BrainScienceCenter"
@@ -82,7 +87,12 @@
     },
     "dicom_nifti_asl": {
       "base": "file",
-      "description": "Full path to the dicom or nifti input files"
+      "description": "DICOM zip containing ASL and M0, or NIfTI file for ASL timeseries"
+    },
+    "nifti_m0": {
+      "base": "file",
+      "description": "M0 NIfTI file (required when using NIfTI input)",
+      "optional": true
     }
   }
 }
