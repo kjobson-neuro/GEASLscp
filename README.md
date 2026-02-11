@@ -16,16 +16,6 @@ This pipeline processes **GE 3D pCASL data** and computes cerebral blood flow (C
 6. **ROI-based analysis** with multiple brain atlases for Alzheimer's specific regions of interest
 7. **PDF report generation** with QC images and regional CBF values
 
-### Key Features
-
-- Automatic extraction of acquisition parameters from JSON sidecar files
-- Automatic differentiation of ASL and M0 volumes based on signal intensity
-- Registration of standard atlases (arterial, cortical, subcortical, thalamus, Schaefer 2018, Landau metaROI)
-- Extraction of mean CBF in Alzheimer's Disease-relevant regions
-- Calculation of relative CBF (rCBF) normalized to putamen
-- Weighted CBF calculations for composite regions (whole brain, grey matter, white matter)
-- PDF output with QC visualizations and tabular results
-
 ### CBF Quantification Model
 
 CBF is calculated using the standard kinetic model for pCASL as described in the ASL White Paper (Alsop et al., 2015):
@@ -55,10 +45,10 @@ CBF is output in units of mL/100g/min.
 
 ## Inputs
 
-| Input | Description | Required |
-|-------|-------------|----------|
-| `dicom_nifti_asl` | DICOM zip containing ASL and M0, or ASL NIfTI file (.nii/.nii.gz) | Yes |
-| `nifti_m0` | M0 NIfTI file. Required when using NIfTI input. | No (required for NIfTI) |
+| Input | Description |
+|-------|-------------|
+| `dicom_nifti_asl` | DICOM zip containing ASL and M0, or ASL NIfTI file (.nii/.nii.gz) |
+| `nifti_m0` | M0 NIfTI file. Required when using NIfTI input. |
 
 ## Configuration Parameters
 
@@ -109,9 +99,9 @@ docker run -v /path/to/input:/flywheel/v0/input \
            -v /path/to/output:/flywheel/v0/output \
            kjobson/geaslscp:latest \
            -a /flywheel/v0/input/asl_dicom.zip \
-           -l 1.8 \
-           -p 2.0 \
-           -n 4
+           -l 3 \
+           -p 2.025 \
+           -n 2
 ```
 
 ### With NIfTI Input
@@ -124,9 +114,9 @@ docker run -v /path/to/input:/flywheel/v0/input \
            kjobson/geaslscp:latest \
            -a /flywheel/v0/input/asl.nii.gz \
            -m /flywheel/v0/input/m0.nii.gz \
-           -l 1.8 \
-           -p 2.0 \
-           -n 4
+           -l 3 \
+           -p 2.025 \
+           -n 2
 ```
 
 ### CBF Only (Skip Extended Analysis)
@@ -149,7 +139,7 @@ docker run -v /path/to/input:/flywheel/v0/input \
 | `-m` | Path to M0 NIfTI file (required when using NIfTI input) |
 | `-l` | Labeling duration (seconds) |
 | `-p` | Post-labeling delay (seconds) |
-| `-n` | Number of averages |
+| `-n` | Number of averages (number of label-control pairs) |
 | `-e` | Skip extended analysis (registration, atlas extraction, PDF) |
 | `-s` | Subject ID |
 
@@ -158,7 +148,7 @@ docker run -v /path/to/input:/flywheel/v0/input \
 ### Prerequisites
 
 1. Install the Flywheel CLI: https://docs.flywheel.io/CLI/
-2. Log in to your Flywheel instance: `fw login <your-api-key>`
+2. Log in to your Flywheel instance: `fw-beta login <your-api-key>`
 3. Edit the manifest file to fit with your specifications - you may have to change your username in place of `kjobson`
 
 ### Building and Uploading
