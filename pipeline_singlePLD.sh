@@ -95,12 +95,12 @@ exe_dir="${flywheel}/workflows"
 [ -e "$exe_dir" ] || mkdir "$exe_dir"
 
 ### Get information about the scan
-touch ${workdir}/metadata.json
+touch ${export_dir}/metadata.json
 
-python3 ${exe_dir}/flywheel_context.py
+python3 ${exe_dir}/flywheel_context.py -dir ${export_dir}
 
 # Check if metadata was created successfully
-if [ ! -f "${workdir}/metadata.txt" ]; then
+if [ ! -f "${workdir}/metadata.json" ]; then
     echo "ERROR: Failed to generate metadata file"
 fi
 
@@ -436,15 +436,9 @@ mv "$temp_file" "$weighted_table"
 
 # Smoothing the deformation field of images obtained previously
 fslmaths ${workdir}/ind2temp1Warp.nii.gz -s 5 ${workdir}/swarp.nii.gz
-${ANTSPATH}/WarpImageMultiTransform 3 ${workdir}/asl_mc.nii.gz ${workdir}/s_ind2temp_warped.nii.gz -R ${workdir}/ind2temp_warped.nii.gz --use-BSpline ${workdir}/swarp.nii.gz ${workdir}/ind2temp0GenericAffine.mat
+${ANTSPATH}/WarpImageMultiTransform 3 ${asl_nifti} ${workdir}/s_ind2temp_warped.nii.gz -R ${workdir}/ind2temp_warped.nii.gz --use-BSpline ${workdir}/swarp.nii.gz ${workdir}/ind2temp0GenericAffine.mat
 ${ANTSPATH}/WarpImageMultiTransform 3 ${workdir}/cbf.nii.gz ${workdir}/wcbf.nii.gz -R ${workdir}/ind2temp_warped.nii.gz --use-BSpline ${workdir}/swarp.nii.gz ${workdir}/ind2temp0GenericAffine.mat
 #wt1: t1 relaxation time. common space. 
-
-### tSNR calculation
-# Can not do tSNR with GE data?
-#fslmaths ${workdir}/sub.nii.gz -Tmean ${workdir}/sub_mean.nii.gz
-#fslmaths ${workdir}/sub.nii.gz -Tstd ${workdir}/sub_std.nii.gz
-#fslmaths ${workdir}/sub_mean.nii.gz -div ${workdir}/sub_std.nii.gz ${workdir}/tSNR_map.nii.gz
 
 # New list of ROIs as we do not want to include the thalamus in the PDF output
 new_list=("arterial2" "cortical" "subcortical") ##list of ROIs - "landau" removed
@@ -467,7 +461,19 @@ python3 /flywheel/v0/workflows/qc.py -viz ${viz} -out ${workdir} -seg_folder ${w
 find ${workdir} -maxdepth 1 \( -name "cbf.nii.gz" -o -name "viz" -o -name "stats" -o -name "output.pdf" -o -name "qc.pdf" \) -print0 | xargs -0 -I {} mv {} ${export_dir}/
 mv ${export_dir}/stats/tmp* ${workdir}/ 
 
-## Zip the output directory for easy download
-## Also zip work dir so people can look at the intermediate data to troubleshoot
-zip -q -r ${export_dir}/final_output.zip ${export_dir}
-zip -q -r ${export_dir}/work_dir.zip ${workdir}
+subject_id=$(grep "^Subject:" ${export_dir}/metadata.json | cut -d' ' -f2-)
+if [ -z "$subject_id" ]; then
+    echo "subject_id is empty or not found"
+    ## Zip the output directory for easy download
+    ## Also zip work dir so people can look at the intermediate data to troubleshoot
+    zip -q -r ${export_dir}/final_output.zip ${export_dir}
+    zip -q -r ${export_dir}/work_dir.zip ${workdir}
+else
+    echo "subject_id found: $subject_id"
+    echo "adding subject_id to CBF map, PDF files and zipped output directories"
+    mv ${export_dir}/cbf.nii.gz ${export_dir}/${subject_id}_cbf.nii.gz
+    mv ${export_dir}/output.pdf ${export_dir}/${subject_id}_output.pdf
+    mv ${export_dir}/qc.pdf ${export_dir}/${subject_id}_qc.pdf
+    zip -q -r ${export_dir}/${subject_id}_final_output.zip ${export_dir}
+    zip -q -r ${export_dir}/${subject_id}_work_dir.zip ${workdir}
+fi

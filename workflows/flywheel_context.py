@@ -7,8 +7,14 @@ import glob
 import shutil
 from pathlib import Path
 from datetime import datetime
+import argparse
 
 print(sys.path)
+
+# get directory of metadata file
+parser = argparse.ArgumentParser(description='get location of metadata file')
+parser.add_argument('-dir',type=str, help='The directory where the metadata file is.')
+args = parser.parse_args()
 
 # logging
 logging.basicConfig(level=logging.INFO)
@@ -20,14 +26,9 @@ with flywheel.GearContext() as context:
     context.init_logging()
     config = context.config
     analysis_id = context.destination['id']
-    gear_output_dir = context.output_dir
-    
-    # Fix the working directory path issue
-    working_dir = Path(gear_output_dir).resolve().parent / f"{Path(gear_output_dir).name}_work"
-    working_dir.mkdir(parents=True, exist_ok=True)
     
     # Set workdir for compatibility
-    workdir = str(working_dir)
+    workdir = args.dir
 
     # Get relevant container objects
     fw = flywheel.Client(context.get_input('api_key')['key'])
@@ -43,22 +44,6 @@ with flywheel.GearContext() as context:
     
     # Get current runtime timestamp
     gear_run_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # Extract scan date from session label
-    # Expected format: ${subject label}x${scan date}x3Tx${studyname}
-    scan_date = "Unknown"
-    try:
-        session_parts = session_label.split('x')
-        if len(session_parts) >= 3:
-            # Second element should be the scan date
-            scan_date = session_parts[1]
-            logger.info(f"Extracted scan date: {scan_date} from session label: {session_label}")
-        else:
-            logger.warning(f"Session label format unexpected: {session_label}")
-            logger.warning("Expected format: subjectxScanDatex3TxStudyName")
-    except Exception as e:
-        logger.warning(f"Could not parse scan date from session label '{session_label}': {e}")
-        scan_date = "Unknown"
     
     # Get acquisition label - need to determine which acquisition this analysis belongs to
     acquisition_label = "Unknown"
@@ -92,7 +77,6 @@ with flywheel.GearContext() as context:
         "session_label": session_label,
         "acquisition_label": acquisition_label,
         "analysis_id": analysis_id,
-        "scan_date": scan_date,
         "gear_run_datetime": gear_run_datetime
     }
     
@@ -105,7 +89,6 @@ with flywheel.GearContext() as context:
             f.write(f"Session: {session_label}\n")
             f.write(f"Acquisition: {acquisition_label}\n")
             f.write(f"Analysis ID: {analysis_id}\n")
-            f.write(f"Scan Date: {scan_date}\n")
             f.write(f"Gear Run Date/Time: {gear_run_datetime}\n")
             f.write("========================\n")
             
