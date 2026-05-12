@@ -7,8 +7,6 @@
 # Processes Siemens and GE ASL data for CBF calculation
 #
 
-set -euo pipefail
-
 # ==============================================================================
 # INPUT VARIABLES
 # ==============================================================================
@@ -321,7 +319,7 @@ register_to_template() {
     log "Registering to template space"
 
     # Smooth ASL image and register to template
-    fslmaths "${work_dir}/asl_mc.nii.gz" -s 1.5 -mas "${work_dir}/mask.nii.gz" "${work_dir}/s_asl.nii.gz"
+    fslmaths "${asl_nifti}" -s 1.5 -mas "${work_dir}/mask.nii.gz" "${work_dir}/s_asl.nii.gz"
 
     "${ANTSPATH}/antsRegistration" \
         --dimensionality 3 \
@@ -346,7 +344,7 @@ register_to_template() {
     "${ANTSPATH}/WarpImageMultiTransform" 3 \
         "${std_dir}/batsasl/bats_cbf.nii.gz" \
         "${work_dir}/w_batscbf.nii.gz" \
-        -R "${work_dir}/asl_mc.nii.gz" \
+        -R "${asl_nifti}" \
         -i "${work_dir}/ind2temp0GenericAffine.mat" \
         "${work_dir}/ind2temp1InverseWarp.nii.gz"
 }
@@ -367,7 +365,7 @@ process_roi() {
     "${ANTSPATH}/WarpImageMultiTransform" 3 \
         "${std_dir}/${roi}.nii.gz" \
         "${work_dir}/w_${roi}.nii.gz" \
-        -R "${work_dir}/asl_mc.nii.gz" \
+        -R "${asl_nifti}" \
         --use-NN \
         -i "${work_dir}/ind2temp0GenericAffine.mat" \
         "${work_dir}/ind2temp1InverseWarp.nii.gz"

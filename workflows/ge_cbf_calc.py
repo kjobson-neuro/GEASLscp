@@ -37,10 +37,10 @@ lmbda = 0.9
 t1b = 1.6
 ld = args.ld
 pld = args.pld
-#ld = args.ld/10**6
-#pld = args.pld/10**6
 
-cbf = (asl_data / m0) * (6000 * lmbda * np.exp(pld / t1b)) / ((2 * a * t1b) * (1 - np.exp(-ld / t1b)))
+m0t = m0 / (1 - np.exp(-2000/1200))
+
+cbf = (asl_data / m0t) * (6000 * lmbda * np.exp(pld / t1b)) / ((2 * a * t1b) * (1 - np.exp(-ld / t1b)))
 cbf[np.isinf(cbf) | np.isnan(cbf)] = 0
 
 cbf = cbf * mask_data

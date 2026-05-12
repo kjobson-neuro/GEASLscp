@@ -31,7 +31,7 @@
     }
   },
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.2.4",
   "environment": {
     "FLYWHEEL": "/flywheel/v0",
     "PYTHON_GET_PIP_URL": "https://github.com/pypa/get-pip/raw/0d8570dc44796f4369b652222cf176b3db6ac70e/public/get-pip.py",
@@ -75,7 +75,7 @@
   "custom": {
     "gear-builder": {
       "category": "analysis",
-      "image": "kjobson/geaslscp:0.2.0"
+      "image": "kjobson/geaslscp:0.2.4"
     },
     "flywheel": {
       "suite": "BrainScienceCenter"
