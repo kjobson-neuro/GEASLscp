@@ -79,6 +79,24 @@ If your DICOM sequence does not include the labeling duration, post-labeling del
 
 If there is no subject ID supplied, or no subject ID present when you run this container as a Flywheel gear, the outputs will not include subject ID.
 
+## Downloading and Installing the Docker Container
+
+1. **Install Docker** (if not already installed): https://docs.docker.com/get-docker/
+
+2. **Pull the container from Docker Hub:**
+
+```bash
+docker pull kjobson/geaslscp:0.4.1
+```
+
+3. **Verify the image was downloaded:**
+
+```bash
+docker images kjobson/geaslscp
+```
+
+> **Note:** While this container can be run standalone via `docker run`, it was primarily developed to serve as a Flywheel gear. As a result, some file paths (e.g. `/flywheel/v0/input`, `/flywheel/v0/output`) reflect Flywheel's expected directory structure rather than a generic Docker convention.
+
 ## Examples of Running the Docker Container
 
 ### Basic Usage
@@ -86,7 +104,7 @@ If there is no subject ID supplied, or no subject ID present when you run this c
 ```bash
 docker run -v /path/to/input:/flywheel/v0/input \
            -v /path/to/output:/flywheel/v0/output \
-           kjobson/geaslscp:latest \
+           kjobson/geaslscp:0.4.1 \
            -a /flywheel/v0/input/asl_dicom.zip
 ```
 
@@ -97,7 +115,7 @@ If your data does not contain the acquisition parameters in the JSON sidecar, pr
 ```bash
 docker run -v /path/to/input:/flywheel/v0/input \
            -v /path/to/output:/flywheel/v0/output \
-           kjobson/geaslscp:latest \
+           kjobson/geaslscp:0.4.1 \
            -a /flywheel/v0/input/asl_dicom.zip \
            -l 3 \
            -p 2.025 \
@@ -111,7 +129,7 @@ For NIfTI input, provide both ASL and M0 files along with acquisition parameters
 ```bash
 docker run -v /path/to/input:/flywheel/v0/input \
            -v /path/to/output:/flywheel/v0/output \
-           kjobson/geaslscp:latest \
+           kjobson/geaslscp:0.4.1 \
            -a /flywheel/v0/input/asl.nii.gz \
            -m /flywheel/v0/input/m0.nii.gz \
            -l 3 \
@@ -126,7 +144,7 @@ To output only the CBF map without registration, atlas extraction, or PDF genera
 ```bash
 docker run -v /path/to/input:/flywheel/v0/input \
            -v /path/to/output:/flywheel/v0/output \
-           kjobson/geaslscp:latest \
+           kjobson/geaslscp:0.4.1 \
            -a /flywheel/v0/input/asl_dicom.zip \
            -e
 ```
