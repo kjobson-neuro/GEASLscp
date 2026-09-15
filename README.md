@@ -30,12 +30,12 @@ Where:
 - **LD** = labeling duration (seconds)
 - **PLD** = post-labeling delay (seconds)
 
-Fixed parameters:
+Parameters:
 | Parameter | Value | Description |
 |-----------|-------|-------------|
-| α | 0.6375 | Labeling efficiency for pCASL |
-| λ | 0.9 mL/g | Blood–brain partition coefficient |
-| T1b | 1.6 s | T1 of arterial blood at 3T |
+| α | from `alpha` config | Labeling efficiency for pCASL (required, no default) |
+| λ | 0.9 mL/g | Blood–brain partition coefficient (fixed) |
+| T1b | 1.6 s | T1 of arterial blood at 3T (fixed) |
 
 CBF is output in units of mL/100g/min.
 

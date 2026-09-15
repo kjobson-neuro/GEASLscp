@@ -2,7 +2,8 @@
     "config": {
        "ld": 3,
        "pld": 2.025,
-       "avg": 2
+       "avg": 2,
+       "alpha": 0.6375
     },
     "inputs": {
         "dicom_nifti_asl": {

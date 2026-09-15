@@ -12,13 +12,14 @@
 # ==============================================================================
 
 script_name=$(basename "$0")
-syntax="${script_name} [-a ASL input][-m M0 NIfTI][-s SubjectID][-p PLD][-l LD][-n Averages][-e]"
+syntax="${script_name} [-a ASL input][-m M0 NIfTI][-s SubjectID][-p PLD][-l LD][-n Averages][-g Alpha][-e]"
 
 while getopts "a:c:l:m:n:s:p:e" arg; do
     case "$arg" in
         a) opt_a="$OPTARG" ;;
         c) opt_c="$OPTARG" ;;
         e) opt_e=1 ;;
+        g) opt_g="$OPTARG" ;;
         l) opt_l="$OPTARG" ;;
         m) opt_m="$OPTARG" ;;
         n) opt_n="$OPTARG" ;;
@@ -54,6 +55,7 @@ fi
 ld_input="${opt_l:-$(jq -r '.config.ld // empty' "$config_json_file")}"
 avg_input="${opt_n:-$(jq -r '.config.avg // empty' "$config_json_file")}"
 pld_input="${opt_p:-$(jq -r '.config.pld // empty' "$config_json_file")}"
+alpha_input="${opt_g:-$(jq -r '.config.alpha // empty' "$config_json_file")}"
 
 # Skip extended analysis flag (registration, atlas, PDF)
 if [ -n "${opt_e:-}" ]; then
@@ -281,6 +283,12 @@ extract_parameters() {
     if [[ -z "${ld:-}" || -z "${pld:-}" || -z "${m0_scale:-}" ]]; then
         die "One or more required variables (ld, pld, m0_scale) are unset or empty"
     fi
+
+    if ! is_valid_number "${alpha_input:-}"; then
+        die "alpha config is required and must be a number"
+    fi
+    alpha="$alpha_input"
+    log "Alpha (labeling efficiency): ${alpha}"
 }
 
 # ==============================================================================
@@ -306,10 +314,16 @@ calculate_cbf() {
         -ld "$ld" \
         -pld "$pld" \
         -scale "$m0_scale" \
+        -alpha "$alpha" \
         -out "${work_dir}"
 
     fslmaths "${work_dir}/cbf.nii.gz" -mas "${work_dir}/mask_ero.nii.gz" "${work_dir}/cbf_mas.nii.gz"
 }
+
+save_json() {
+    log "Saving JSON file with parameters used for CBF calc"
+    cp "${json_file}" "${export_dir}"
+} 
 
 # ==============================================================================
 # IMAGE REGISTRATION
@@ -660,6 +674,7 @@ preprocess_data
 extract_parameters
 skull_strip
 calculate_cbf
+save_json
 
 if [ "$skip_extended" != "true" ]; then
     register_to_template

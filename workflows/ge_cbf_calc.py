@@ -14,6 +14,7 @@ parser.add_argument('-m', type=str, help="The path to the mask file.")
 parser.add_argument('-ld',  type=float, help='An integer number.')
 parser.add_argument('-pld', type=float, help='An integer number.')
 parser.add_argument('-scale',type=float, help='An integer number.')
+parser.add_argument('-alpha', type=float, required=True, help='Labeling efficiency alpha value.')
 parser.add_argument('-out',type=str, help='The output directory.')
 args = parser.parse_args()
 
@@ -32,7 +33,7 @@ print(args.pld)
 print("LD and PLD as input to the cbf calc script.")
 
 m0 = ref_data * args.scale
-a = 0.6375
+a = args.alpha
 lmbda = 0.9
 t1b = 1.6
 ld = args.ld
